@@ -1,0 +1,30 @@
+{
+  "name": "lol-league",
+  "version": "1.0.0",
+  "description": "Discord bot tracking LoL game records and voice channel activity",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "license": "private",
+  "dependencies": {
+    "axios": "^1.7.0",
+    "better-sqlite3": "^11.0.0",
+    "discord.js": "^14.16.0",
+    "dotenv": "^17.4.2",
+    "node-cron": "^3.0.3",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0",
+    "@types/better-sqlite3": "^7.6.0",
+    "@types/node": "^22.0.0",
+    "@types/node-cron": "^3.0.11"
+  }
+}
