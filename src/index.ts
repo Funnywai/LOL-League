@@ -8,6 +8,7 @@ import { onReady } from './bot/events/ready';
 import { handleVoiceStateUpdate } from './bot/events/voiceStateUpdate';
 import { handleInteractionCreate } from './bot/events/interactionCreate';
 import { RiotApi } from './riot/api';
+import { loadChampionNames } from './riot/championNames';
 import { pollAllUsers } from './riot/poller';
 import { getDayRange, getWeekRange } from './voice/reporter';
 import { getLeaderboard } from './db/voiceSessions';
@@ -23,6 +24,8 @@ async function main(): Promise<void> {
 
   const riotApi = new RiotApi(config.RIOT_API_KEY, config.RIOT_REGION);
   const client = createClient();
+
+  await loadChampionNames();
 
   client.on('ready', async () => {
     await onReady(client, db, config);

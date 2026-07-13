@@ -10,11 +10,12 @@ export function buildGameResultEmbed(riotGameName: string, match: ProcessedMatch
   const durationSec = match.game_duration_seconds % 60;
 
   const embed = new EmbedBuilder()
-    .setTitle(`🎮 ${match.champion_name} - ${result}`)
+    .setTitle(`🎮 ${match.champion_name_zh || match.champion_name} - ${result}`)
     .setColor(color)
     .setAuthor({ name: `${riotGameName} 的最新對戰` })
     .addFields(
       { name: 'KDA', value: `${match.kills} / ${match.deaths} / ${match.assists} (${kda})`, inline: true },
+      { name: '英雄', value: match.champion_name_zh || match.champion_name, inline: true },
       { name: '模式', value: match.queue_type, inline: true },
       { name: '時長', value: `${durationMin}m ${durationSec}s`, inline: true },
     )

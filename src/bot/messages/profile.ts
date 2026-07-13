@@ -32,7 +32,8 @@ export function buildProfileEmbed(user: User, matches: Match[]): EmbedBuilder {
       .map((m) => {
         const result = m.win === 1 ? '✅' : '❌';
         const kda = `${m.kills}/${m.deaths}/${m.assists}`;
-        return `${result} ${m.champion_name} (${kda}) - ${m.queue_type}`;
+        const name = m.champion_name_zh || m.champion_name;
+        return `${result} ${name} (${kda}) - ${m.queue_type}`;
       })
       .join('\n');
     embed.addFields({ name: '最近五場', value: recentText, inline: false });
