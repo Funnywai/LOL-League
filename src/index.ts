@@ -14,6 +14,7 @@ import { getLeaderboard } from './db/voiceSessions';
 import { buildVoiceReportEmbed } from './bot/messages/voiceReport';
 import { buildGameResultEmbed } from './bot/messages/gameResult';
 import { getConfig } from './db/guildConfig';
+import { getUserByDiscordId } from './db/users';
 
 async function main(): Promise<void> {
   const config = loadConfig();
@@ -47,7 +48,8 @@ async function main(): Promise<void> {
         if (gameResultChannelId) {
           const channel = client.channels.cache.get(gameResultChannelId) as TextChannel | undefined;
           if (channel) {
-            const embed = buildGameResultEmbed(discordId, processedMatch);
+            const user = getUserByDiscordId(db, discordId);
+            const embed = buildGameResultEmbed(user?.riot_game_name ?? discordId, processedMatch);
             channel.send({ embeds: [embed] }).catch(console.error);
           }
         }

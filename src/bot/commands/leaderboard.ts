@@ -27,7 +27,7 @@ export async function handleLeaderboard(
         const hours = Math.floor(entry.total_seconds / 3600);
         const minutes = Math.floor((entry.total_seconds % 3600) / 60);
         return {
-          name: `${i + 1}. <@${entry.user_discord_id}>`,
+          name: `${i + 1}. ${entry.riot_game_name ?? entry.user_discord_id}`,
           value: `${hours}h ${minutes}m | ${entry.session_count} 場`,
           inline: false,
         };
@@ -43,14 +43,14 @@ export async function handleLeaderboard(
       const kda = totalDeaths > 0 ? (totalKills + totalAssists) / totalDeaths : Infinity;
       const wins = matches.filter((m) => m.win === 1).length;
       const pentas = matches.reduce((s, m) => s + m.penta_kills, 0);
-      return { discord_id: user.discord_id, kda, wins, pentas, totalGames: matches.length };
+      return { name: user.riot_game_name, kda, wins, pentas, totalGames: matches.length };
     });
 
     if (type === 'kda') {
       embed.setTitle('🏆 KDA 排行榜');
       userStats.sort((a, b) => b.kda - a.kda);
       const fields = userStats.slice(0, 10).map((s, i) => ({
-        name: `${i + 1}. <@${s.discord_id}>`,
+        name: `${i + 1}. ${s.name}`,
         value: `KDA: ${s.kda === Infinity ? '∞' : s.kda.toFixed(2)} (${s.totalGames} 場)`,
         inline: false,
       }));
@@ -60,7 +60,7 @@ export async function handleLeaderboard(
       embed.setTitle('🏆 勝場排行榜');
       userStats.sort((a, b) => b.wins - a.wins);
       const fields = userStats.slice(0, 10).map((s, i) => ({
-        name: `${i + 1}. <@${s.discord_id}>`,
+        name: `${i + 1}. ${s.name}`,
         value: `${s.wins} 勝 (${s.totalGames} 場)`,
         inline: false,
       }));
@@ -70,7 +70,7 @@ export async function handleLeaderboard(
       embed.setTitle('🏆 Penta Kill 排行榜');
       userStats.sort((a, b) => b.pentas - a.pentas);
       const fields = userStats.slice(0, 10).map((s, i) => ({
-        name: `${i + 1}. <@${s.discord_id}>`,
+        name: `${i + 1}. ${s.name}`,
         value: `${s.pentas} 次 Penta Kill (${s.totalGames} 場)`,
         inline: false,
       }));

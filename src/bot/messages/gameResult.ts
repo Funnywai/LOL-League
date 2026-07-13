@@ -2,7 +2,7 @@
 import { EmbedBuilder } from 'discord.js';
 import { ProcessedMatch } from '../../riot/matchProcessor';
 
-export function buildGameResultEmbed(discordId: string, match: ProcessedMatch): EmbedBuilder {
+export function buildGameResultEmbed(riotGameName: string, match: ProcessedMatch): EmbedBuilder {
   const result = match.win === 1 ? '勝利' : '敗北';
   const color = match.win === 1 ? 0x00ff00 : 0xff0000;
   const kda = ((match.kills + match.assists) / Math.max(match.deaths, 1)).toFixed(2);
@@ -12,7 +12,7 @@ export function buildGameResultEmbed(discordId: string, match: ProcessedMatch): 
   const embed = new EmbedBuilder()
     .setTitle(`🎮 ${match.champion_name} - ${result}`)
     .setColor(color)
-    .setAuthor({ name: `<@${discordId}> 的最新對戰` })
+    .setAuthor({ name: `${riotGameName} 的最新對戰` })
     .addFields(
       { name: 'KDA', value: `${match.kills} / ${match.deaths} / ${match.assists} (${kda})`, inline: true },
       { name: '模式', value: match.queue_type, inline: true },

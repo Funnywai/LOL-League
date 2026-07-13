@@ -33,7 +33,7 @@ export function buildVoiceReportEmbed(
     const seconds = entry.total_seconds % 60;
     const durationStr = `${hours}h ${minutes}m ${seconds}s`;
     return {
-      name: `${medal} <@${entry.user_discord_id}>`,
+      name: `${medal} ${entry.riot_game_name ?? entry.user_discord_id}`,
       value: `總時長：${durationStr} | 場次：${entry.session_count}`,
       inline: false,
     };

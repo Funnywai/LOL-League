@@ -15,7 +15,7 @@ export async function handleProfile(
   const user = getUserByDiscordId(db, discordId);
   if (!user) {
     await interaction.reply({
-      content: `<@${discordId}> 尚未綁定 Riot 帳號。請使用 \`/register\` 綁定。`,
+      content: '你尚未綁定 Riot 帳號。請使用 `/register` 綁定。',
       ephemeral: true,
     });
     return;
@@ -24,7 +24,7 @@ export async function handleProfile(
   const matches = getMatchesByUser(db, discordId);
   if (matches.length === 0) {
     await interaction.reply({
-      content: `<@${discordId}> 目前沒有遊戲紀錄。請稍後再查詢。`,
+      content: `${user.riot_game_name} 目前沒有遊戲紀錄。`,
       ephemeral: true,
     });
     return;

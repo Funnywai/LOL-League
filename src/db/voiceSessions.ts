@@ -19,6 +19,8 @@ export interface NewVoiceSession {
 
 export interface VoiceLeaderboardEntry {
   user_discord_id: string;
+  riot_game_name: string | null;
+  riot_tagline: string | null;
   total_seconds: number;
   session_count: number;
 }
@@ -45,13 +47,16 @@ export function closeSession(db: Database.Database, sessionId: number, leftAt: n
 export function getLeaderboard(db: Database.Database, since: number, until: number): VoiceLeaderboardEntry[] {
   return db.prepare(`
     SELECT
-      user_discord_id,
-      SUM(duration_seconds) as total_seconds,
+      v.user_discord_id,
+      u.riot_game_name,
+      u.riot_tagline,
+      SUM(v.duration_seconds) as total_seconds,
       COUNT(*) as session_count
-    FROM voice_sessions
-    WHERE left_at IS NOT NULL
-      AND left_at >= ? AND left_at <= ?
-    GROUP BY user_discord_id
+    FROM voice_sessions v
+    LEFT JOIN users u ON v.user_discord_id = u.discord_id
+    WHERE v.left_at IS NOT NULL
+      AND v.left_at >= ? AND v.left_at <= ?
+    GROUP BY v.user_discord_id
     ORDER BY total_seconds DESC
   `).all(since, until) as VoiceLeaderboardEntry[];
 }

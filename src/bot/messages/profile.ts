@@ -15,9 +15,9 @@ export function buildProfileEmbed(user: User, matches: Match[]): EmbedBuilder {
   const totalPentas = matches.reduce((sum, m) => sum + m.penta_kills, 0);
 
   const embed = new EmbedBuilder()
-    .setTitle(`📊 ${user.riot_game_name}#${user.riot_tagline}`)
+    .setTitle(`📊 ${user.riot_game_name}`)
     .setColor(0x0099ff)
-    .setAuthor({ name: `<@${user.discord_id}> 的遊戲數據` })
+    .setAuthor({ name: `${user.riot_game_name} 的遊戲數據` })
     .addFields(
       { name: '總場次', value: `${totalGames}`, inline: true },
       { name: '勝/負', value: `${wins} / ${losses}`, inline: true },
