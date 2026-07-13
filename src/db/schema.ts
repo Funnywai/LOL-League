@@ -22,6 +22,7 @@ function migrateMatchesCompositeUnique(db: Database.Database): void {
       match_id TEXT NOT NULL,
       user_discord_id TEXT NOT NULL,
       champion_name TEXT NOT NULL,
+      champion_name_zh TEXT NOT NULL DEFAULT '',
       kills INTEGER NOT NULL,
       deaths INTEGER NOT NULL,
       assists INTEGER NOT NULL,
@@ -35,13 +36,30 @@ function migrateMatchesCompositeUnique(db: Database.Database): void {
       FOREIGN KEY (user_discord_id) REFERENCES users(discord_id) ON DELETE CASCADE
     );
 
-    INSERT INTO matches_new SELECT * FROM matches;
+    INSERT INTO matches_new (id, match_id, user_discord_id, champion_name, champion_name_zh, kills, deaths, assists, win, penta_kills, game_duration_seconds, game_end_timestamp, queue_type, created_at)
+    SELECT id, match_id, user_discord_id, champion_name, '', kills, deaths, assists, win, penta_kills, game_duration_seconds, game_end_timestamp, queue_type, created_at FROM matches;
     DROP TABLE matches;
     ALTER TABLE matches_new RENAME TO matches;
 
     CREATE INDEX IF NOT EXISTS idx_matches_user ON matches(user_discord_id);
     CREATE INDEX IF NOT EXISTS idx_matches_end_time ON matches(game_end_timestamp);
   `);
+}
+
+function migrateAddChampionNameZh(db: Database.Database): void {
+  const row = db.prepare(
+    "SELECT sql FROM sqlite_master WHERE type='table' AND name='matches'"
+  ).get() as { sql: string } | undefined;
+
+  if (!row) return; // no table yet
+
+  if (row.sql.includes('champion_name_zh')) {
+    // Already has column
+    return;
+  }
+
+  db.exec("ALTER TABLE matches ADD COLUMN champion_name_zh TEXT NOT NULL DEFAULT ''");
+  console.log('Migration: added champion_name_zh column to matches');
 }
 
 export function initializeSchema(db: Database.Database): void {
@@ -73,6 +91,7 @@ export function initializeSchema(db: Database.Database): void {
 
   // Run migration before creating new matches table
   migrateMatchesCompositeUnique(db);
+  migrateAddChampionNameZh(db);
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS matches (
@@ -80,6 +99,7 @@ export function initializeSchema(db: Database.Database): void {
       match_id TEXT NOT NULL,
       user_discord_id TEXT NOT NULL,
       champion_name TEXT NOT NULL,
+      champion_name_zh TEXT NOT NULL DEFAULT '',
       kills INTEGER NOT NULL,
       deaths INTEGER NOT NULL,
       assists INTEGER NOT NULL,

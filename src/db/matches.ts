@@ -11,11 +11,11 @@ export function insertMatch(db: Database.Database, discordId: string, data: Proc
   const now = Math.floor(Date.now() / 1000);
   const result = db.prepare(`
     INSERT OR IGNORE INTO matches (
-      match_id, user_discord_id, champion_name, kills, deaths, assists,
+      match_id, user_discord_id, champion_name, champion_name_zh, kills, deaths, assists,
       win, penta_kills, game_duration_seconds, game_end_timestamp, queue_type, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
-    data.match_id, discordId, data.champion_name, data.kills, data.deaths, data.assists,
+    data.match_id, discordId, data.champion_name, data.champion_name_zh, data.kills, data.deaths, data.assists,
     data.win, data.penta_kills, data.game_duration_seconds, data.game_end_timestamp,
     data.queue_type, now
   );
