@@ -16,7 +16,7 @@ export async function pollAllUsers(
 
   for (const user of users) {
     try {
-      const matchIds = await riotApi.getMatchIds(user.riot_puuid, user.last_poll_timestamp || undefined);
+      const matchIds = await riotApi.getMatchIds(user.riot_puuid, user.last_poll_timestamp > 0 ? user.last_poll_timestamp : user.registered_at);
 
       for (const matchId of matchIds) {
         try {
