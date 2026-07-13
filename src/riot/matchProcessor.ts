@@ -1,3 +1,5 @@
+import { getChampionNameZh } from './championNames';
+
 export interface RiotParticipantDto {
   puuid: string;
   championName: string;
@@ -24,6 +26,7 @@ export interface RiotMatchDto {
 export interface ProcessedMatch {
   match_id: string;
   champion_name: string;
+  champion_name_zh: string;
   kills: number;
   deaths: number;
   assists: number;
@@ -50,6 +53,7 @@ export function extractMatchData(match: RiotMatchDto, puuid: string): ProcessedM
   return {
     match_id: match.metadata.matchId,
     champion_name: participant.championName,
+    champion_name_zh: getChampionNameZh(participant.championName),
     kills: participant.kills,
     deaths: participant.deaths,
     assists: participant.assists,
