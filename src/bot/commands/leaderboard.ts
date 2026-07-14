@@ -16,7 +16,7 @@ export async function handleLeaderboard(
 
   if (type === 'voice') {
     const entries = getLeaderboard(db, 0, Math.floor(Date.now() / 1000));
-    embed.setTitle('🏆 語音時數排行榜（總計）');
+    embed.setTitle('🏆 語音時數排行榜');
 
     if (entries.length === 0) {
       embed.setDescription('尚無語音活動紀錄');
@@ -76,7 +76,7 @@ export async function handleLeaderboard(
       if (fields.length > 0) embed.addFields(...fields);
       else embed.setDescription('尚無遊戲紀錄');
     } else if (type === 'gametime') {
-      embed.setTitle('🏆 遊戲時長排行榜');
+      embed.setTitle('🏆 上癮排行榜');
       userStats.sort((a, b) => b.totalGameDuration - a.totalGameDuration);
       const fields = userStats.slice(0, 10).map((s, i) => {
         const hours = Math.floor(s.totalGameDuration / 3600);
