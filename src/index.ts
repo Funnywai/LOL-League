@@ -10,7 +10,7 @@ import { handleInteractionCreate } from './bot/events/interactionCreate';
 import { RiotApi } from './riot/api';
 import { loadChampionNames } from './riot/championNames';
 import { pollAllUsers } from './riot/poller';
-import { getDayRange, getWeekRange } from './voice/reporter';
+import { getWeekRange } from './voice/reporter';
 import { getLeaderboard } from './db/voiceSessions';
 import { buildVoiceReportEmbed } from './bot/messages/voiceReport';
 import { buildGameResultEmbed } from './bot/messages/gameResult';
@@ -60,20 +60,6 @@ async function main(): Promise<void> {
       console.log('Game poll complete');
     } catch (err) {
       console.error('Game poll failed:', err);
-    }
-  });
-
-  cron.schedule('59 23 * * *', async () => {
-    console.log('Sending daily voice report...');
-    const range = getDayRange();
-    const entries = getLeaderboard(db, range.since, range.until);
-    const voiceReportChannelId = getConfig(db, 'voice_report_channel');
-    if (voiceReportChannelId) {
-      const channel = client.channels.cache.get(voiceReportChannelId) as TextChannel | undefined;
-      if (channel) {
-        const embed = buildVoiceReportEmbed('daily', entries, new Date(range.since * 1000), new Date(range.until * 1000));
-        await channel.send({ embeds: [embed] });
-      }
     }
   });
 
