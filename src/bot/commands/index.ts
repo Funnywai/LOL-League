@@ -76,6 +76,12 @@ export const commandDefinitions = [
     )
     .addSubcommand((sub) =>
       sub.setName('queue').setDescription('顯示目前播放佇列')
+    )
+    .addSubcommand((sub) =>
+      sub.setName('volume').setDescription('調整播放音量 (0-200%)')
+        .addIntegerOption((opt) =>
+          opt.setName('percent').setDescription('音量百分比，100 為預設').setRequired(true).setMinValue(0).setMaxValue(200)
+        )
     ),
 
   new SlashCommandBuilder()

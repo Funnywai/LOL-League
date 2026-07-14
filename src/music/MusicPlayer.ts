@@ -24,6 +24,7 @@ export class MusicPlayer {
   private connection: VoiceConnection | null = null;
   private idleTimer: ReturnType<typeof setTimeout> | null = null;
   private currentResource: AudioResource | null = null;
+  private volume: number = 1.0;
 
   constructor(guildId: string) {
     this.guildId = guildId;
@@ -130,8 +131,10 @@ export class MusicPlayer {
 
     const resource = createAudioResource(streamResult.stream, {
       inputType: StreamType.Arbitrary,
+      inlineVolume: true,
     });
     this.currentResource = resource;
+    resource.volume?.setVolume(this.volume);
     this.player.play(resource);
     this.resetIdleTimer();
 
@@ -164,6 +167,17 @@ export class MusicPlayer {
     this.player.unpause();
     this.resetIdleTimer();
     return true;
+  }
+
+  getVolume(): number {
+    return Math.round(this.volume * 100);
+  }
+
+  setVolume(percent: number): number {
+    const clamped = Math.max(0, Math.min(200, percent));
+    this.volume = clamped / 100;
+    this.currentResource?.volume?.setVolume(this.volume);
+    return clamped;
   }
 
   stop(): void {

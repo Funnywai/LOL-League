@@ -29,6 +29,9 @@ export async function handleMusic(interaction: ChatInputCommandInteraction): Pro
     case 'queue':
       await handleQueue(interaction, guildId);
       break;
+    case 'volume':
+      await handleVolume(interaction, guildId);
+      break;
     default:
       await interaction.reply({ content: '未知的子指令', ephemeral: true });
   }
@@ -173,4 +176,17 @@ async function handleQueue(interaction: ChatInputCommandInteraction, guildId: st
   }
 
   await interaction.reply({ embeds: [embed] });
+}
+
+async function handleVolume(interaction: ChatInputCommandInteraction, guildId: string): Promise<void> {
+  const percent = interaction.options.getInteger('percent', true);
+  const player = musicManager.get(guildId);
+
+  if (!player.isConnected()) {
+    await interaction.reply({ content: '❌ 我目前不在語音頻道中', ephemeral: true });
+    return;
+  }
+
+  const actual = player.setVolume(percent);
+  await interaction.reply({ content: `🔊 音量已設為 **${actual}%**` });
 }
