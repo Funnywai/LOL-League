@@ -78,14 +78,22 @@ export class MusicPlayer {
     if (this.isConnected()) {
       return true;
     }
-    this.connection = joinChannel(channelId, this.guildId, adapterCreator);
+    try {
+      this.connection = joinChannel(channelId, this.guildId, adapterCreator);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`joinVoiceChannel failed in guild ${this.guildId}:`, message);
+      return false;
+    }
+
     this.connection.subscribe(this.player);
 
     try {
-      await entersState(this.connection, VoiceConnectionStatus.Ready, 10_000);
+      await entersState(this.connection, VoiceConnectionStatus.Ready, 15_000);
       return true;
-    } catch {
-      console.error(`Failed to connect to voice channel ${channelId} in guild ${this.guildId}`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`Voice connection timed out for channel ${channelId} in guild ${this.guildId}:`, message);
       this.connection.destroy();
       this.connection = null;
       return false;

@@ -21,22 +21,31 @@ export function formatDuration(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-export async function searchYouTube(query: string): Promise<TrackInfo | null> {
+export type SearchResult =
+  | { status: 'found'; track: TrackInfo }
+  | { status: 'not_found' }
+  | { status: 'error'; message: string };
+
+export async function searchYouTube(query: string): Promise<SearchResult> {
   try {
     const results = await play.search(query, { limit: 1, source: { youtube: 'video' } });
     if (results.length === 0) {
-      return null;
+      return { status: 'not_found' };
     }
     const video = results[0];
     return {
-      title: video.title ?? 'Unknown',
-      url: video.url,
-      duration: formatDuration(video.durationInSec),
-      thumbnail: video.thumbnails?.[0]?.url ?? '',
+      status: 'found',
+      track: {
+        title: video.title ?? 'Unknown',
+        url: video.url,
+        duration: formatDuration(video.durationInSec),
+        thumbnail: video.thumbnails?.[0]?.url ?? '',
+      },
     };
   } catch (err) {
-    console.error('YouTube search failed:', err);
-    return null;
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('YouTube search failed:', message);
+    return { status: 'error', message };
   }
 }
 

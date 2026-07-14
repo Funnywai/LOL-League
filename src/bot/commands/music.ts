@@ -43,18 +43,28 @@ async function handlePlay(interaction: ChatInputCommandInteraction, guildId: str
 
   await interaction.deferReply();
 
-  const track = await searchYouTube(songQuery);
-  if (!track) {
+  const searchResult = await searchYouTube(songQuery);
+  if (searchResult.status === 'not_found') {
     await interaction.editReply({ content: `❌ 找不到歌曲：**${songQuery}**` });
     return;
   }
+  if (searchResult.status === 'error') {
+    await interaction.editReply({ content: `❌ 搜尋失敗，請稍後再試\n\`${searchResult.message}\`` });
+    return;
+  }
 
+  const track = searchResult.track;
   const player = musicManager.get(guildId);
 
   if (!player.isConnected()) {
-    const connected = await player.connect(voiceChannel.id, voiceChannel.guild.voiceAdapterCreator);
+    const adapterCreator = voiceChannel.guild.voiceAdapterCreator;
+    if (!adapterCreator) {
+      await interaction.editReply({ content: '❌ 無法取得語音連線介面，請確認 bot 已正確啟動' });
+      return;
+    }
+    const connected = await player.connect(voiceChannel.id, adapterCreator);
     if (!connected) {
-      await interaction.editReply({ content: '❌ 無法加入語音頻道' });
+      await interaction.editReply({ content: '❌ 無法加入語音頻道，請確認 bot 有「連線」和「說話」權限' });
       return;
     }
   }
