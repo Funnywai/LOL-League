@@ -38,4 +38,4 @@ class MusicManager {
 
 export const musicManager = new MusicManager();
 export { MusicPlayer } from './MusicPlayer';
-export { TrackInfo, QueuedTrack, SearchResult, searchYouTube } from './MusicSources';
+export { TrackInfo, QueuedTrack, SearchResult, searchYouTube, checkYtDlp } from './MusicSources';

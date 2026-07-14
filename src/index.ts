@@ -16,6 +16,7 @@ import { buildVoiceReportEmbed } from './bot/messages/voiceReport';
 import { buildGameResultEmbed } from './bot/messages/gameResult';
 import { getConfig } from './db/guildConfig';
 import { getUserByDiscordId } from './db/users';
+import { checkYtDlp } from './music';
 
 async function main(): Promise<void> {
   const config = loadConfig();
@@ -26,6 +27,7 @@ async function main(): Promise<void> {
   const client = createClient();
 
   await loadChampionNames();
+  checkYtDlp();
 
   client.on('ready', async () => {
     await onReady(client, db, config);
