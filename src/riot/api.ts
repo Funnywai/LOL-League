@@ -2,8 +2,8 @@ import axios, { AxiosInstance } from 'axios';
 import type { RiotMatchDto } from './matchProcessor';
 
 const REGION_BASE_URLS: Record<string, string> = {
-  sea: 'https://sea.api.riotgames.com',
-  tw2: 'https://sea.api.riotgames.com',
+  sea: 'https://asia.api.riotgames.com',
+  tw2: 'https://asia.api.riotgames.com',
   kr: 'https://asia.api.riotgames.com',
   jp1: 'https://asia.api.riotgames.com',
 };
