@@ -22,6 +22,7 @@ describe('matches db module', () => {
     const inserted = insertMatch(db, '123', {
       match_id: 'SEA1_001',
       champion_name: 'Ahri',
+      champion_name_zh: '阿璃',
       kills: 10,
       deaths: 5,
       assists: 15,
@@ -38,6 +39,7 @@ describe('matches db module', () => {
     insertMatch(db, '123', {
       match_id: 'SEA1_002',
       champion_name: 'Yasuo',
+      champion_name_zh: '犽宿',
       kills: 3,
       deaths: 12,
       assists: 2,
@@ -51,6 +53,7 @@ describe('matches db module', () => {
     const duplicate = insertMatch(db, '123', {
       match_id: 'SEA1_002',
       champion_name: 'Yasuo',
+      champion_name_zh: '犽宿',
       kills: 3,
       deaths: 12,
       assists: 2,
@@ -67,6 +70,7 @@ describe('matches db module', () => {
     insertMatch(db, '123', {
       match_id: 'SEA1_003',
       champion_name: 'Ahri',
+      champion_name_zh: '阿璃',
       kills: 5,
       deaths: 3,
       assists: 10,
@@ -79,6 +83,7 @@ describe('matches db module', () => {
     insertMatch(db, '123', {
       match_id: 'SEA1_004',
       champion_name: 'Lux',
+      champion_name_zh: '拉克絲',
       kills: 8,
       deaths: 2,
       assists: 12,
@@ -99,6 +104,7 @@ describe('matches db module', () => {
       insertMatch(db, '123', {
         match_id: `SEA1_${i}`,
         champion_name: 'Test',
+        champion_name_zh: '',
         kills: i,
         deaths: 0,
         assists: 0,
