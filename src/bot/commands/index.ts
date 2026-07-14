@@ -56,6 +56,26 @@ export const commandDefinitions = [
     ),
 
   new SlashCommandBuilder()
+    .setName('music')
+    .setDescription('音樂播放控制')
+    .addSubcommand((sub) =>
+      sub.setName('play').setDescription('搜尋並播放一首歌')
+        .addStringOption((opt) => opt.setName('song').setDescription('歌曲名稱或 YouTube 連結').setRequired(true))
+    )
+    .addSubcommand((sub) =>
+      sub.setName('stop').setDescription('停止播放並離開語音頻道')
+    )
+    .addSubcommand((sub) =>
+      sub.setName('skip').setDescription('跳過目前歌曲')
+    )
+    .addSubcommand((sub) =>
+      sub.setName('leave').setDescription('離開語音頻道')
+    )
+    .addSubcommand((sub) =>
+      sub.setName('queue').setDescription('顯示目前播放佇列')
+    ),
+
+  new SlashCommandBuilder()
     .setName('help')
     .setDescription('顯示所有可用指令'),
 ];

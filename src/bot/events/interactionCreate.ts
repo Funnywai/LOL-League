@@ -9,6 +9,7 @@ import { handleLeaderboard } from '../commands/leaderboard';
 import { handleVoiceReport } from '../commands/voice-report';
 import { handleConfig } from '../commands/config';
 import { handleHelp } from '../commands/help';
+import { handleMusic } from '../commands/music';
 
 export async function handleInteractionCreate(
   interaction: Interaction,
@@ -37,6 +38,9 @@ export async function handleInteractionCreate(
       break;
     case 'config':
       await handleConfig(interaction, db);
+      break;
+    case 'music':
+      await handleMusic(interaction);
       break;
     case 'help':
       await handleHelp(interaction);
