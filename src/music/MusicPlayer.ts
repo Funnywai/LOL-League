@@ -36,13 +36,17 @@ export class MusicPlayer {
   private setupPlayerEvents(): void {
     this.player.on('stateChange', (oldState, newState) => {
       if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
-        this.playNext();
+        this.playNext().catch((err) => {
+          console.error(`playNext failed on Idle in guild ${this.guildId}:`, err.message);
+        });
       }
     });
 
     this.player.on('error', (error) => {
       console.error(`MusicPlayer error in guild ${this.guildId}:`, error.message);
-      this.playNext();
+      this.playNext().catch((err) => {
+        console.error(`playNext failed on error recovery in guild ${this.guildId}:`, err.message);
+      });
     });
   }
 
