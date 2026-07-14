@@ -4,7 +4,6 @@ import Database from 'better-sqlite3';
 import { getAllUsers } from '../../db/users';
 import { getMatchesByUser } from '../../db/matches';
 import { getLeaderboard } from '../../db/voiceSessions';
-import { getDayRange, getWeekRange } from '../../voice/reporter';
 
 export async function handleLeaderboard(
   interaction: ChatInputCommandInteraction,
@@ -16,12 +15,11 @@ export async function handleLeaderboard(
   const embed = new EmbedBuilder().setColor(0xffd700).setTimestamp();
 
   if (type === 'voice') {
-    const range = getWeekRange();
-    const entries = getLeaderboard(db, range.since, range.until);
-    embed.setTitle('🏆 語音時數排行榜（本週）');
+    const entries = getLeaderboard(db, 0, Math.floor(Date.now() / 1000));
+    embed.setTitle('🏆 語音時數排行榜（總計）');
 
     if (entries.length === 0) {
-      embed.setDescription('本週無語音活動紀錄');
+      embed.setDescription('尚無語音活動紀錄');
     } else {
       const fields = entries.slice(0, 10).map((entry, i) => {
         const hours = Math.floor(entry.total_seconds / 3600);
