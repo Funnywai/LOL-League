@@ -135,7 +135,6 @@ async function handleSkip(interaction: ChatInputCommandInteraction, guildId: str
     await interaction.reply({ content: `⏭ 已跳過 **${skipped.info.title}**` });
   } else {
     player.stop();
-    musicManager.remove(guildId);
     await interaction.reply({ content: '⏭ 佇列已清空，停止播放並離開語音頻道' });
   }
 }
@@ -148,7 +147,6 @@ async function handleLeave(interaction: ChatInputCommandInteraction, guildId: st
   }
 
   player.disconnect();
-  musicManager.remove(guildId);
   await interaction.reply({ content: '👋 已離開語音頻道' });
 }
 
