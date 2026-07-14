@@ -3,20 +3,35 @@ import { YouTube, Video } from 'youtube-sr';
 import { StreamType } from '@discordjs/voice';
 import { Readable } from 'stream';
 import { spawn, execSync } from 'child_process';
+import { homedir } from 'os';
+import { existsSync } from 'fs';
 
-let ytdlpAvailable = false;
+let ytdlpPath: string | null = null;
+
+const YTDLP_CANDIDATES = [
+  'yt-dlp',
+  `${homedir()}/.local/bin/yt-dlp`,
+  '/usr/local/bin/yt-dlp',
+  '/usr/bin/yt-dlp',
+];
 
 export function checkYtDlp(): boolean {
-  try {
-    execSync('yt-dlp --version', { stdio: 'ignore' });
-    ytdlpAvailable = true;
-    console.log('yt-dlp: available');
-    return true;
-  } catch {
-    console.warn('⚠ yt-dlp not found! Audio streaming will not work.');
-    console.warn('  Install: pip3 install --break-system-packages yt-dlp');
-    return false;
+  for (const candidate of YTDLP_CANDIDATES) {
+    if (existsSync(candidate)) {
+      try {
+        execSync(`"${candidate}" --version`, { stdio: 'ignore' });
+        ytdlpPath = candidate;
+        console.log(`yt-dlp: found at ${candidate}`);
+        return true;
+      } catch {
+        continue;
+      }
+    }
   }
+  console.warn('⚠ yt-dlp not found! Audio streaming will not work.');
+  console.warn('  Install: pip3 install --break-system-packages yt-dlp');
+  console.warn('  If installed, add ~/.local/bin to PATH or run: export PATH="$HOME/.local/bin:$PATH"');
+  return false;
 }
 
 export interface TrackInfo {
@@ -60,12 +75,12 @@ export async function searchYouTube(query: string): Promise<SearchResult> {
 }
 
 export function createAudioStream(url: string): { stream: Readable; type: StreamType } | null {
-  if (!ytdlpAvailable) {
+  if (!ytdlpPath) {
     console.error('Cannot create audio stream: yt-dlp is not installed');
     return null;
   }
   try {
-    const ytdlp = spawn('yt-dlp', [
+    const ytdlp = spawn(ytdlpPath, [
       '-f', 'bestaudio[ext=webm]/bestaudio',
       '--no-playlist',
       '--no-warnings',
