@@ -14,8 +14,11 @@ export async function handleMusic(interaction: ChatInputCommandInteraction): Pro
     case 'play':
       await handlePlay(interaction, guildId);
       break;
-    case 'stop':
-      await handleStop(interaction, guildId);
+    case 'pause':
+      await handlePause(interaction, guildId);
+      break;
+    case 'resume':
+      await handleResume(interaction, guildId);
       break;
     case 'skip':
       await handleSkip(interaction, guildId);
@@ -89,16 +92,32 @@ async function handlePlay(interaction: ChatInputCommandInteraction, guildId: str
   }
 }
 
-async function handleStop(interaction: ChatInputCommandInteraction, guildId: string): Promise<void> {
+async function handlePause(interaction: ChatInputCommandInteraction, guildId: string): Promise<void> {
   const player = musicManager.get(guildId);
   if (!player.isConnected()) {
     await interaction.reply({ content: '❌ 我目前不在語音頻道中', ephemeral: true });
     return;
   }
 
-  player.stop();
-  musicManager.remove(guildId);
-  await interaction.reply({ content: '⏹ 已停止播放並離開語音頻道' });
+  if (player.pause()) {
+    await interaction.reply({ content: '⏸ 已暫停播放' });
+  } else {
+    await interaction.reply({ content: '❌ 目前沒有正在播放的歌曲', ephemeral: true });
+  }
+}
+
+async function handleResume(interaction: ChatInputCommandInteraction, guildId: string): Promise<void> {
+  const player = musicManager.get(guildId);
+  if (!player.isConnected()) {
+    await interaction.reply({ content: '❌ 我目前不在語音頻道中', ephemeral: true });
+    return;
+  }
+
+  if (player.resume()) {
+    await interaction.reply({ content: '▶️ 繼續播放' });
+  } else {
+    await interaction.reply({ content: '❌ 目前沒有暫停中的歌曲', ephemeral: true });
+  }
 }
 
 async function handleSkip(interaction: ChatInputCommandInteraction, guildId: string): Promise<void> {

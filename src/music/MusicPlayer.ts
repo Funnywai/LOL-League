@@ -74,6 +74,10 @@ export class MusicPlayer {
     return this.player.state.status === AudioPlayerStatus.Playing;
   }
 
+  isPaused(): boolean {
+    return this.player.state.status === AudioPlayerStatus.Paused;
+  }
+
   isConnected(): boolean {
     return this.connection !== null && this.connection.state.status !== VoiceConnectionStatus.Destroyed;
   }
@@ -106,7 +110,7 @@ export class MusicPlayer {
 
   async play(track: QueuedTrack): Promise<string | null> {
     this.queue.push(track);
-    if (!this.isPlaying()) {
+    if (!this.isPlaying() && !this.isPaused()) {
       return this.playNext();
     }
     return null;
@@ -142,6 +146,24 @@ export class MusicPlayer {
     const skipped = this.queue.shift();
     this.player.stop();
     return skipped ?? null;
+  }
+
+  pause(): boolean {
+    if (!this.isPlaying()) {
+      return false;
+    }
+    this.player.pause();
+    this.resetIdleTimer();
+    return true;
+  }
+
+  resume(): boolean {
+    if (!this.isPaused()) {
+      return false;
+    }
+    this.player.unpause();
+    this.resetIdleTimer();
+    return true;
   }
 
   stop(): void {

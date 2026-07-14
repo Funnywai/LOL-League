@@ -63,7 +63,10 @@ export const commandDefinitions = [
         .addStringOption((opt) => opt.setName('song').setDescription('歌曲名稱或 YouTube 連結').setRequired(true))
     )
     .addSubcommand((sub) =>
-      sub.setName('stop').setDescription('停止播放並離開語音頻道')
+      sub.setName('pause').setDescription('暫停目前歌曲')
+    )
+    .addSubcommand((sub) =>
+      sub.setName('resume').setDescription('繼續播放')
     )
     .addSubcommand((sub) =>
       sub.setName('skip').setDescription('跳過目前歌曲')
