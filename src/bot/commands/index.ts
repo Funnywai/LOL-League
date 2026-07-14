@@ -26,6 +26,7 @@ export const commandDefinitions = [
         { name: '勝場', value: 'wins' },
         { name: 'Penta Kill', value: 'penta' },
         { name: '語音時數', value: 'voice' },
+        { name: '遊戲時長', value: 'gametime' },
       )
     ),
 

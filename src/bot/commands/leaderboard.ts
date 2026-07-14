@@ -41,7 +41,8 @@ export async function handleLeaderboard(
       const kda = totalDeaths > 0 ? (totalKills + totalAssists) / totalDeaths : Infinity;
       const wins = matches.filter((m) => m.win === 1).length;
       const pentas = matches.reduce((s, m) => s + m.penta_kills, 0);
-      return { name: user.riot_game_name, kda, wins, pentas, totalGames: matches.length };
+      const totalGameDuration = matches.reduce((s, m) => s + m.game_duration_seconds, 0);
+      return { name: user.riot_game_name, kda, wins, pentas, totalGames: matches.length, totalGameDuration };
     });
 
     if (type === 'kda') {
@@ -72,6 +73,20 @@ export async function handleLeaderboard(
         value: `${s.pentas} 次 Penta Kill (${s.totalGames} 場)`,
         inline: false,
       }));
+      if (fields.length > 0) embed.addFields(...fields);
+      else embed.setDescription('尚無遊戲紀錄');
+    } else if (type === 'gametime') {
+      embed.setTitle('🏆 遊戲時長排行榜');
+      userStats.sort((a, b) => b.totalGameDuration - a.totalGameDuration);
+      const fields = userStats.slice(0, 10).map((s, i) => {
+        const hours = Math.floor(s.totalGameDuration / 3600);
+        const minutes = Math.floor((s.totalGameDuration % 3600) / 60);
+        return {
+          name: `${i + 1}. ${s.name}`,
+          value: `${hours}h ${minutes}m (${s.totalGames} 場)`,
+          inline: false,
+        };
+      });
       if (fields.length > 0) embed.addFields(...fields);
       else embed.setDescription('尚無遊戲紀錄');
     }
