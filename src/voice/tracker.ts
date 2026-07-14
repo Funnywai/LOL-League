@@ -1,5 +1,10 @@
 import Database from 'better-sqlite3';
 import { insertSession, closeSession } from '../db/voiceSessions';
+import { getUserByDiscordId } from '../db/users';
+
+const EXCLUDED_CHANNEL_NAMES = new Set([
+  '正在瞓覺嘅人',
+]);
 
 export function handleVoiceJoin(
   db: Database.Database,
@@ -8,6 +13,12 @@ export function handleVoiceJoin(
   channelName: string,
   joinedAt: number
 ): number {
+  if (EXCLUDED_CHANNEL_NAMES.has(channelName)) {
+    return -1;
+  }
+  if (!getUserByDiscordId(db, userId)) {
+    return -1;
+  }
   return insertSession(db, {
     user_discord_id: userId,
     channel_id: channelId,
