@@ -1,12 +1,15 @@
 import axios, { AxiosInstance } from 'axios';
 import type { RiotMatchDto } from './matchProcessor';
 
-const REGION_BASE_URLS: Record<string, string> = {
-  sea: 'https://asia.api.riotgames.com',
-  tw2: 'https://asia.api.riotgames.com',
+const MATCH_BASE_URLS: Record<string, string> = {
+  sea: 'https://sea.api.riotgames.com',
+  tw2: 'https://sea.api.riotgames.com',
   kr: 'https://asia.api.riotgames.com',
   jp1: 'https://asia.api.riotgames.com',
 };
+
+// Account API uses different routing — this API key only works on asia for /riot/account/v1/
+const ACCOUNT_BASE_URL = 'https://asia.api.riotgames.com';
 
 class TokenBucket {
   private tokens: number;
@@ -50,26 +53,25 @@ export interface SummonerAccount {
 
 export class RiotApi {
   private readonly apiKey: string;
-  private readonly baseUrl: string;
-  private readonly httpClient: AxiosInstance;
+  private readonly matchClient: AxiosInstance;
+  private readonly accountClient: AxiosInstance;
   private readonly rateLimiter: TokenBucket;
 
   constructor(apiKey: string, region: string) {
     this.apiKey = apiKey;
-    this.baseUrl = REGION_BASE_URLS[region] ?? 'https://asia.api.riotgames.com';
+    const matchBaseUrl = MATCH_BASE_URLS[region] ?? 'https://asia.api.riotgames.com';
     this.rateLimiter = new TokenBucket(20, 20);
-    this.httpClient = axios.create({
-      baseURL: this.baseUrl,
-      headers: { 'X-Riot-Token': this.apiKey },
-      timeout: 10000,
-    });
+
+    const headers = { 'X-Riot-Token': this.apiKey };
+    this.matchClient = axios.create({ baseURL: matchBaseUrl, headers, timeout: 10000 });
+    this.accountClient = axios.create({ baseURL: ACCOUNT_BASE_URL, headers, timeout: 10000 });
   }
 
   async getSummonerByRiotId(gameName: string, tagLine: string): Promise<SummonerAccount> {
     await this.rateLimiter.acquire();
     const encodedName = encodeURIComponent(gameName);
     const encodedTag = encodeURIComponent(tagLine);
-    const response = await this.httpClient.get<{
+    const response = await this.accountClient.get<{
       puuid: string;
       gameName: string;
       tagLine: string;
@@ -87,7 +89,7 @@ export class RiotApi {
     if (startTime !== undefined) {
       params.startTime = startTime;
     }
-    const response = await this.httpClient.get<string[]>(
+    const response = await this.matchClient.get<string[]>(
       `/lol/match/v5/matches/by-puuid/${puuid}/ids`,
       { params }
     );
@@ -96,7 +98,7 @@ export class RiotApi {
 
   async getMatch(matchId: string): Promise<RiotMatchDto> {
     await this.rateLimiter.acquire();
-    const response = await this.httpClient.get<RiotMatchDto>(`/lol/match/v5/matches/${matchId}`);
+    const response = await this.matchClient.get<RiotMatchDto>(`/lol/match/v5/matches/${matchId}`);
     return response.data;
   }
 }
